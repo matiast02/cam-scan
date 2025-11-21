@@ -1,0 +1,8 @@
+# Lista de usuarios de ejemplo
+# Líneas que empiezan con # son comentarios
+
+admin
+root
+user
+test
+default

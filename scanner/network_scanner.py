@@ -11,7 +11,7 @@ from scanner.identifier import identify_manufacturer
 from utils.output_utils import print_scan_header, print_device_found, print_progress
 
 
-def scan_network(network_range, ports_to_scan, timeout_scan=1, timeout_auth=3, max_workers=20):
+def scan_network(network_range, ports_to_scan, timeout_scan=1, timeout_auth=3, max_workers=20, custom_credentials=None):
     """
     Scan entire network for devices
 
@@ -21,6 +21,7 @@ def scan_network(network_range, ports_to_scan, timeout_scan=1, timeout_auth=3, m
         timeout_scan: Scan timeout
         timeout_auth: Authentication timeout
         max_workers: Number of concurrent threads
+        custom_credentials: Optional list of custom credentials to test
 
     Returns:
         list: List of found devices
@@ -32,7 +33,7 @@ def scan_network(network_range, ports_to_scan, timeout_scan=1, timeout_auth=3, m
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_ip = {
-            executor.submit(scan_device, ip, ports_to_scan, timeout_scan, timeout_auth): ip
+            executor.submit(scan_device, ip, ports_to_scan, timeout_scan, timeout_auth, custom_credentials): ip
             for ip in network.hosts()
         }
 

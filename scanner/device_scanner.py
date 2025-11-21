@@ -13,7 +13,7 @@ from protocols import (
 from config import DEFAULT_CREDENTIALS, RTSP_PATHS
 
 
-def scan_single_port(ip, port, port_info, timeout_scan=1, timeout_auth=3):
+def scan_single_port(ip, port, port_info, timeout_scan=1, timeout_auth=3, custom_credentials=None):
     """
     Scan a specific port and identify the service
 
@@ -23,6 +23,7 @@ def scan_single_port(ip, port, port_info, timeout_scan=1, timeout_auth=3):
         port_info: Port information dictionary
         timeout_scan: Scan timeout
         timeout_auth: Authentication timeout
+        custom_credentials: Optional list of custom credentials to test
 
     Returns:
         dict: Port scan result or None if port is closed
@@ -44,10 +45,10 @@ def scan_single_port(ip, port, port_info, timeout_scan=1, timeout_auth=3):
 
     # Test based on protocol
     if protocol == 'RTSP':
-        result = _test_rtsp_port(ip, port, result, timeout_auth)
+        result = _test_rtsp_port(ip, port, result, timeout_auth, custom_credentials)
 
     elif protocol in ['HTTP', 'HTTPS']:
-        result = _test_http_port(ip, port, result, timeout_auth)
+        result = _test_http_port(ip, port, result, timeout_auth, custom_credentials)
 
     elif protocol == 'ONVIF':
         result = _test_onvif_port(ip, result, timeout_auth)
@@ -61,11 +62,14 @@ def scan_single_port(ip, port, port_info, timeout_scan=1, timeout_auth=3):
     return result
 
 
-def _test_rtsp_port(ip, port, result, timeout):
+def _test_rtsp_port(ip, port, result, timeout, custom_credentials=None):
     """Test RTSP port with common paths and credentials"""
+    # Use custom credentials if provided, otherwise use defaults
+    credentials_to_test = custom_credentials if custom_credentials else DEFAULT_CREDENTIALS[:10]
+
     # Test common RTSP paths
     for path in RTSP_PATHS[:5]:  # Test first 5 paths
-        for username, password, mfr in DEFAULT_CREDENTIALS[:10]:  # First 10 credentials
+        for username, password, mfr in credentials_to_test:
             success, status, auth_type, server = test_rtsp_auth(
                 ip, port, username, password, path, timeout
             )
@@ -90,9 +94,12 @@ def _test_rtsp_port(ip, port, result, timeout):
     return result
 
 
-def _test_http_port(ip, port, result, timeout):
+def _test_http_port(ip, port, result, timeout, custom_credentials=None):
     """Test HTTP/HTTPS port with credentials"""
-    for username, password, mfr in DEFAULT_CREDENTIALS[:10]:
+    # Use custom credentials if provided, otherwise use defaults
+    credentials_to_test = custom_credentials if custom_credentials else DEFAULT_CREDENTIALS[:10]
+
+    for username, password, mfr in credentials_to_test:
         success, status, auth_type, server = test_http_auth(
             ip, port, username, password, timeout
         )
@@ -154,7 +161,7 @@ def _test_dvr_port(ip, port, result, timeout):
     return result
 
 
-def scan_device(ip, ports_to_scan, timeout_scan=1, timeout_auth=3):
+def scan_device(ip, ports_to_scan, timeout_scan=1, timeout_auth=3, custom_credentials=None):
     """
     Scan all ports of a device
 
@@ -163,6 +170,7 @@ def scan_device(ip, ports_to_scan, timeout_scan=1, timeout_auth=3):
         ports_to_scan: Dictionary of ports to scan
         timeout_scan: Scan timeout
         timeout_auth: Authentication timeout
+        custom_credentials: Optional list of custom credentials to test
 
     Returns:
         dict: Device information or None if no ports are open
@@ -176,7 +184,7 @@ def scan_device(ip, ports_to_scan, timeout_scan=1, timeout_auth=3):
     }
 
     for port, port_info in ports_to_scan.items():
-        result = scan_single_port(ip, port, port_info, timeout_scan, timeout_auth)
+        result = scan_single_port(ip, port, port_info, timeout_scan, timeout_auth, custom_credentials)
         if result:
             device_info['ports'].append(result)
 
