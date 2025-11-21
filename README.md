@@ -1,355 +1,412 @@
 # IP Scanner - Multi-Port Scanner for IP Cameras, DVR & NVR
 
-Herramienta profesional de escaneo de red para identificar cámaras IP, DVR y NVR con vulnerabilidades de seguridad, especialmente aquellos con credenciales por defecto.
+Professional network scanning tool to identify IP cameras, DVRs, and NVRs with security vulnerabilities, especially those with default credentials.
 
-## Características
+## Features
 
-- **Escaneo Multi-Puerto**: Detecta múltiples servicios (RTSP, HTTP, ONVIF, protocolos propietarios)
-- **Identificación Automática**: Reconoce fabricantes (Hikvision, Dahua, Axis, etc.)
-- **Prueba de Credenciales**: Verifica credenciales por defecto conocidas
-- **Escaneo Paralelo**: Utiliza multi-threading para escaneos rápidos
-- **Reportes Detallados**: Genera reportes con URLs listas para usar
-- **Modular y Extensible**: Arquitectura modular para fácil mantenimiento
+- **Multi-Port Scanning**: Detects multiple services (RTSP, HTTP, ONVIF, proprietary protocols)
+- **Automatic Identification**: Recognizes manufacturers (Hikvision, Dahua, Axis, etc.)
+- **Credential Testing**: Verifies known default credentials
+- **Parallel Scanning**: Uses multi-threading for fast scans
+- **Detailed Reports**: Generates reports with ready-to-use URLs
+- **Modular and Extensible**: Modular architecture for easy maintenance
+- **Custom Credential Lists**: Support for loading custom username and password lists from text files
 
-## Protocolos Soportados
+## Supported Protocols
 
 - **RTSP** (554, 8554, 555, 7447)
 - **HTTP/HTTPS** (80, 443, 8080, 8081, 8000, 9000, 5000)
 - **ONVIF** (3702)
-- **Dahua Propietario** (37777, 37778)
-- **DVR Genéricos** (34567, 6036, 7001)
+- **Dahua Proprietary** (37777, 37778)
+- **Generic DVR** (34567, 6036, 7001)
 - **RTMP** (1935)
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 ip_scanner/
-├── config/                 # Configuraciones
+├── config/                 # Configurations
 │   ├── __init__.py
-│   ├── ports.py           # Definición de puertos
-│   ├── credentials.py     # Base de datos de credenciales
-│   └── paths.py           # Rutas RTSP comunes
-├── protocols/             # Manejadores de protocolos
+│   ├── ports.py           # Port definitions
+│   ├── credentials.py     # Credentials database
+│   └── paths.py           # Common RTSP paths
+├── protocols/             # Protocol handlers
 │   ├── __init__.py
 │   ├── http_handler.py    # HTTP/HTTPS
 │   ├── rtsp_handler.py    # RTSP
 │   ├── onvif_handler.py   # ONVIF
-│   ├── dahua_handler.py   # Dahua propietario
-│   └── dvr_handler.py     # DVR genéricos
-├── scanner/               # Lógica de escaneo
+│   ├── dahua_handler.py   # Dahua proprietary
+│   └── dvr_handler.py     # Generic DVR
+├── scanner/               # Scanning logic
 │   ├── __init__.py
-│   ├── device_scanner.py  # Escaneo de dispositivos
-│   ├── network_scanner.py # Escaneo de red
-│   └── identifier.py      # Identificación de fabricantes
-├── utils/                 # Utilidades
+│   ├── device_scanner.py  # Device scanning
+│   ├── network_scanner.py # Network scanning
+│   └── identifier.py      # Manufacturer identification
+├── utils/                 # Utilities
 │   ├── __init__.py
-│   ├── network_utils.py   # Funciones de red
-│   └── output_utils.py    # Formateo de salida
-├── main.py               # Script principal
-└── README.md             # Este archivo
+│   ├── network_utils.py   # Network functions
+│   └── output_utils.py    # Output formatting
+├── examples/              # Example files
+│   ├── users.txt          # Example user list
+│   └── passwords.txt      # Example password list
+├── main.py               # Main script
+└── README.md             # This file
 ```
 
-## Instalación
+## Installation
 
-### Requisitos
+### Requirements
 
-- Python 3.6 o superior
-- Módulos estándar de Python (no requiere dependencias externas)
+- Python 3.6 or higher
+- Standard Python modules (no external dependencies required)
 
-### Instalación desde el código fuente
+### Installation from source
 
 ```bash
-# Clonar o descargar el proyecto
+# Clone or download the project
 cd ip_scanner
 
-# Opcional: Crear entorno virtual
+# Optional: Create virtual environment
 python3 -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# No se requieren dependencias adicionales
+# No additional dependencies required
 ```
 
-## Uso
+## Usage
 
-### Sintaxis Básica
+### Basic Syntax
 
 ```bash
 python3 main.py [OPTIONS]
 ```
 
-### Opciones
+### Options
 
-| Opción | Descripción | Valor por defecto |
-|--------|-------------|-------------------|
-| `-n, --network` | Red a escanear (ej: 192.168.1.0/24) | Red local auto |
-| `-p, --ports` | Puertos específicos separados por comas | Todos |
-| `--preset` | Preset predefinido (critical/rtsp/http/proprietary/all) | all |
-| `-t, --timeout` | Timeout de escaneo en segundos | 1 |
-| `-a, --auth-timeout` | Timeout de autenticación en segundos | 3 |
-| `-w, --workers` | Número de hilos concurrentes | 20 |
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-n, --network` | Network to scan (e.g., 192.168.1.0/24) | Auto local network |
+| `-p, --ports` | Specific ports separated by commas | All |
+| `--preset` | Predefined preset (critical/rtsp/http/proprietary/all) | all |
+| `-t, --timeout` | Scan timeout in seconds | 1 |
+| `-a, --auth-timeout` | Authentication timeout in seconds | 3 |
+| `-w, --workers` | Number of concurrent threads | 20 |
+| `--userlist` | Text file with username list (one per line) | - |
+| `--passlist` | Text file with password list (one per line) | - |
 
-### Ejemplos de Uso
+### Usage Examples
 
-#### 1. Escaneo Completo de Red Local
+#### 1. Full Local Network Scan
 
 ```bash
 python3 main.py
 ```
 
-Escanea automáticamente tu red local con todos los puertos configurados.
+Automatically scans your local network with all configured ports.
 
-#### 2. Escaneo Rápido (Solo Puertos Críticos)
+#### 2. Quick Scan (Critical Ports Only)
 
 ```bash
 python3 main.py --preset critical
 ```
 
-Escanea solo los puertos más importantes para mayor velocidad.
+Scans only the most important ports for faster results.
 
-#### 3. Solo Puertos RTSP
+#### 3. RTSP Ports Only
 
 ```bash
 python3 main.py --preset rtsp
 ```
 
-Busca únicamente servicios RTSP.
+Only searches for RTSP services.
 
-#### 4. Solo Puertos HTTP/Web
+#### 4. HTTP/Web Ports Only
 
 ```bash
 python3 main.py --preset http
 ```
 
-Busca únicamente interfaces web.
+Only searches for web interfaces.
 
-#### 5. Puertos Específicos
+#### 5. Specific Ports
 
 ```bash
 python3 main.py --ports 554,8554,37777,3702
 ```
 
-Escanea solo los puertos especificados.
+Scans only the specified ports.
 
-#### 6. Red Específica
+#### 6. Specific Network
 
 ```bash
 python3 main.py -n 192.168.0.0/24
 ```
 
-Escanea una red específica en lugar de la red local.
+Scans a specific network instead of the local network.
 
-#### 7. Escaneo Rápido con Más Hilos
+#### 7. Fast Scan with More Threads
 
 ```bash
 python3 main.py -n 192.168.0.0/24 -w 50 --preset critical
 ```
 
-Utiliza 50 hilos para un escaneo más rápido de puertos críticos.
+Uses 50 threads for faster scanning of critical ports.
 
-#### 8. Escaneo Detallado con Timeouts Largos
+#### 8. Detailed Scan with Long Timeouts
 
 ```bash
 python3 main.py -t 2 -a 5
 ```
 
-Aumenta los timeouts para redes lentas o dispositivos que responden lentamente.
+Increases timeouts for slow networks or slow-responding devices.
 
-## Presets Disponibles
+#### 9. Custom Username List
 
-| Preset | Descripción | Puertos |
-|--------|-------------|---------|
-| `critical` | Puertos más importantes | 554, 8554, 8000, 37777, 34567, 80, 3702 |
-| `rtsp` | Solo RTSP | 554, 8554, 555, 7447 |
-| `http` | Solo HTTP/HTTPS | 80, 443, 8080, 8081, 8000, 9000, 5000 |
-| `proprietary` | Protocolos propietarios | 37777, 37778, 34567, 6036, 7001 |
-| `all` | Todos los puertos | Todos los configurados |
+```bash
+python3 main.py --preset critical --userlist users.txt
+```
 
-## Ejemplo de Salida
+Uses a custom username list from a text file.
+
+#### 10. Custom Password List
+
+```bash
+python3 main.py --preset critical --passlist passwords.txt
+```
+
+Uses a custom password list from a text file.
+
+#### 11. Both Custom Lists
+
+```bash
+python3 main.py --preset critical --userlist users.txt --passlist passwords.txt
+```
+
+Uses both custom username and password lists.
+
+## Available Presets
+
+| Preset | Description | Ports |
+|--------|-------------|-------|
+| `critical` | Most important ports | 554, 8554, 8000, 37777, 34567, 80, 3702 |
+| `rtsp` | RTSP only | 554, 8554, 555, 7447 |
+| `http` | HTTP/HTTPS only | 80, 443, 8080, 8081, 8000, 9000, 5000 |
+| `proprietary` | Proprietary protocols | 37777, 37778, 34567, 6036, 7001 |
+| `all` | All ports | All configured ports |
+
+## Custom Credential Lists
+
+You can provide custom username and password lists via text files:
+
+### Username List Format (`users.txt`)
+```
+# Comments start with #
+# Empty lines are ignored
+
+admin
+root
+user
+default
+```
+
+### Password List Format (`passwords.txt`)
+```
+# One password per line
+
+admin
+12345
+password
+123456
+```
+
+The scanner will test all combinations of usernames × passwords. Example files are provided in the `examples/` directory.
+
+## Example Output
 
 ```
 ================================================================================
-  ESCÁNER MULTI-PUERTO PARA CÁMARAS IP Y DVR
+  MULTI-PORT SCANNER FOR IP CAMERAS AND DVR
 ================================================================================
-[*] Tu IP local: 192.168.1.50
-[*] Red a escanear: 192.168.1.0/24
-[*] Puertos a escanear: 17
+[*] Your local IP: 192.168.1.50
+[*] Network to scan: 192.168.1.0/24
+[*] Ports to scan: 17
 
-[*] Escaneando red: 192.168.1.0/24
-[*] Puertos a escanear: 17
-[*] Timeout escaneo: 1s | Auth: 3s
-[*] Hilos: 20
+[*] Scanning network: 192.168.1.0/24
+[*] Ports to scan: 17
+[*] Scan timeout: 1s | Auth: 3s
+[*] Threads: 20
 [*] Total IPs: 256
-[*] Iniciado: 2025-01-15 10:30:00
+[*] Started: 2025-01-15 10:30:00
 
 ================================================================================
-Puertos:
-    80 - HTTP       - Web estándar
-   554 - RTSP       - RTSP estándar
+Ports:
+    80 - HTTP       - Standard web
+   554 - RTSP       - Standard RTSP
   3702 - ONVIF      - ONVIF Discovery
  37777 - DAHUA      - Dahua DVR/NVR
 ================================================================================
 
-🟢 192.168.1.100    - Hikvision        - 4 puerto(s) - 3 accesible(s)
-🟢 192.168.1.101    - Dahua            - 3 puerto(s) - 2 accesible(s)
-🔵 192.168.1.102    - ONVIF Compatible - 2 puerto(s) - 0 accesible(s)
+[+] 192.168.1.100    - Hikvision        - 4 port(s) - 3 accessible
+[+] 192.168.1.101    - Dahua            - 3 port(s) - 2 accessible
+[-] 192.168.1.102    - ONVIF Compatible - 2 port(s) - 0 accessible
 
-[*] Escaneo completado en 45.23s
+[*] Scan completed in 45.23s
 
 ================================================================================
-  RESUMEN DEL ESCANEO
+  SCAN SUMMARY
 ================================================================================
-Total dispositivos encontrados: 3
-Dispositivos VULNERABLES: 2
-Dispositivos PROTEGIDOS: 1
+Total devices found: 3
+VULNERABLE devices: 2
+PROTECTED devices: 1
 
-Distribución por fabricante:
+Distribution by manufacturer:
   - Hikvision: 1
   - Dahua: 1
   - ONVIF Compatible: 1
 
 ================================================================================
-  ⚠️  DISPOSITIVOS VULNERABLES ⚠️
+  [!] VULNERABLE DEVICES [!]
 ================================================================================
 
-┌─ 192.168.1.100 (camera-01.local)
-├─ Fabricante: Hikvision
-├─ Puertos accesibles:
-│
-│  ┌─ Puerto 554 (RTSP)
-│  ├─ Descripción: RTSP estándar
-│  ├─ Servidor: RTSP Server
-│  ├─ Usuario: admin
-│  ├─ Password: 12345
-│  ├─ Fabricante sugerido: Hikvision
-│  └─ URL: rtsp://admin:12345@192.168.1.100:554/Streaming/Channels/101
-│     Path: /Streaming/Channels/101
-└──────────────────────────────────────────────────────────────────────────────
++-- 192.168.1.100 (camera-01.local)
++-- Manufacturer: Hikvision
++-- Accessible ports:
+|
+|  +-- Port 554 (RTSP)
+|  +-- Description: Standard RTSP
+|  +-- Server: RTSP Server
+|  +-- Username: admin
+|  +-- Password: 12345
+|  +-- Suggested manufacturer: Hikvision
+|  +-- URL: rtsp://admin:12345@192.168.1.100:554/Streaming/Channels/101
+|      Path: /Streaming/Channels/101
++------------------------------------------------------------------------------
 ```
 
-## Seguridad y Uso Responsable
+## Security and Responsible Use
 
-⚠️ **ADVERTENCIA IMPORTANTE**:
+⚠️ **IMPORTANT WARNING**:
 
-Esta herramienta está diseñada para:
-- Auditorías de seguridad autorizadas
-- Pruebas en redes propias
-- Identificación de vulnerabilidades en infraestructuras propias
-- Fines educativos
+This tool is designed for:
+- Authorized security audits
+- Testing on your own networks
+- Identifying vulnerabilities in your own infrastructure
+- Educational purposes
 
-**NO USAR** para:
-- Acceder a redes sin autorización
-- Actividades ilegales o maliciosas
-- Comprometer la seguridad de sistemas ajenos
+**DO NOT USE** for:
+- Accessing networks without authorization
+- Illegal or malicious activities
+- Compromising the security of third-party systems
 
-El uso indebido de esta herramienta puede ser ilegal en tu jurisdicción.
+Misuse of this tool may be illegal in your jurisdiction.
 
-## Recomendaciones de Seguridad
+## Security Recommendations
 
-Si encuentras dispositivos vulnerables en tu red:
+If you find vulnerable devices on your network:
 
-1. **Cambiar contraseñas inmediatamente** - Usar contraseñas fuertes y únicas
-2. **Deshabilitar servicios innecesarios** - Cerrar puertos no utilizados
-3. **Configurar firewall** - Segmentar red y limitar accesos
-4. **Actualizar firmware** - Mantener dispositivos actualizados
-5. **Deshabilitar acceso desde Internet** - Nunca exponer cámaras directamente
-6. **Usar VPN** - Para acceso remoto seguro
-7. **Monitorear accesos** - Revisar logs regularmente
+1. **Change passwords immediately** - Use strong and unique passwords
+2. **Disable unnecessary services** - Close unused ports
+3. **Configure firewall** - Segment network and limit access
+4. **Update firmware** - Keep devices up to date
+5. **Disable Internet access** - Never expose cameras directly
+6. **Use VPN** - For secure remote access
+7. **Monitor access** - Review logs regularly
 
-## Extender la Herramienta
+## Extending the Tool
 
-### Agregar Nuevas Credenciales
+### Add New Credentials
 
-Edita `config/credentials.py`:
+Edit `config/credentials.py`:
 
 ```python
 DEFAULT_CREDENTIALS = [
-    ("nuevo_usuario", "nueva_password", "Fabricante"),
-    # ... más credenciales
+    ("new_user", "new_password", "Manufacturer"),
+    # ... more credentials
 ]
 ```
 
-### Agregar Nuevos Puertos
+### Add New Ports
 
-Edita `config/ports.py`:
+Edit `config/ports.py`:
 
 ```python
 DEFAULT_PORTS = {
-    9999: {'protocol': 'NUEVO', 'description': 'Descripción'},
-    # ... más puertos
+    9999: {'protocol': 'NEW', 'description': 'Description'},
+    # ... more ports
 }
 ```
 
-### Agregar Nuevas Rutas RTSP
+### Add New RTSP Paths
 
-Edita `config/paths.py`:
+Edit `config/paths.py`:
 
 ```python
 RTSP_PATHS = [
-    "/nueva/ruta",
-    # ... más rutas
+    "/new/path",
+    # ... more paths
 ]
 ```
 
-### Crear Nuevo Manejador de Protocolo
+### Create New Protocol Handler
 
-1. Crea un nuevo archivo en `protocols/`
-2. Implementa la función de prueba
-3. Importa en `protocols/__init__.py`
-4. Úsalo en `scanner/device_scanner.py`
+1. Create a new file in `protocols/`
+2. Implement the test function
+3. Import in `protocols/__init__.py`
+4. Use it in `scanner/device_scanner.py`
 
-## Solución de Problemas
+## Troubleshooting
 
-### Error: "No se pudo detectar la red local"
+### Error: "Could not detect local network"
 
-- Verifica tu conexión de red
-- Usa `-n` para especificar manualmente: `-n 192.168.1.0/24`
+- Verify your network connection
+- Use `-n` to specify manually: `-n 192.168.1.0/24`
 
-### Escaneo muy lento
+### Very Slow Scanning
 
-- Reduce el número de puertos: `--preset critical`
-- Aumenta hilos: `-w 50`
+- Reduce number of ports: `--preset critical`
+- Increase threads: `-w 50`
 - Reduce timeout: `-t 0.5 -a 2`
 
-### No encuentra dispositivos conocidos
+### Doesn't Find Known Devices
 
-- Aumenta timeout: `-t 2 -a 5`
-- Verifica que los dispositivos estén en la red correcta
-- Algunos dispositivos pueden no responder a ciertos puertos
+- Increase timeout: `-t 2 -a 5`
+- Verify devices are on the correct network
+- Some devices may not respond to certain ports
 
-### Errores de permisos en Linux
+### Permission Errors on Linux
 
 ```bash
 sudo python3 main.py
 ```
 
-## Salida de Archivos
+## Output Files
 
-Los resultados se guardan automáticamente en:
+Results are automatically saved to:
 
 ```
 scan_vulnerable_YYYYMMDD_HHMMSS.txt
 ```
 
-Ejemplo: `scan_vulnerable_20250115_103045.txt`
+Example: `scan_vulnerable_20250115_103045.txt`
 
-## Contribuir
+## Contributing
 
-Para contribuir al proyecto:
+To contribute to the project:
 
-1. Agrega nuevos protocolos en `protocols/`
-2. Agrega credenciales conocidas en `config/credentials.py`
-3. Mejora la detección de fabricantes en `scanner/identifier.py`
-4. Reporta bugs y sugerencias
+1. Add new protocols in `protocols/`
+2. Add known credentials in `config/credentials.py`
+3. Improve manufacturer detection in `scanner/identifier.py`
+4. Report bugs and suggestions
 
-## Licencia
+## License
 
-Este proyecto es solo para fines educativos y de auditoría de seguridad autorizada.
+This project is for educational purposes and authorized security auditing only.
 
 ## Disclaimer
 
-El autor no se hace responsable del uso indebido de esta herramienta. Úsala solo en redes y sistemas donde tengas autorización expresa.
+The author is not responsible for misuse of this tool. Use it only on networks and systems where you have express authorization.
 
 ---
 
-**Última actualización**: 2025-01-15
-**Versión**: 1.0.0
+**Last updated**: 2025-01-15
+**Version**: 1.0.0

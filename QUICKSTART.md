@@ -39,14 +39,20 @@ python3 main.py --preset rtsp
 python3 main.py --preset http
 ```
 
+### 6. Use Custom Credential Lists
+
+```bash
+python3 main.py --preset critical --userlist users.txt --passlist passwords.txt
+```
+
 ## Understanding Output
 
 ```
-🟢 192.168.1.100    - Hikvision        - 4 puerto(s) - 3 accesible(s)
+[+] 192.168.1.100    - Hikvision        - 4 port(s) - 3 accessible
 ```
 
-- 🟢 = Device with accessible services (vulnerable)
-- 🔵 = Device found but protected
+- `[+]` = Device with accessible services (vulnerable)
+- `[-]` = Device found but protected
 - IP: 192.168.1.100
 - Manufacturer: Hikvision
 - 4 ports open, 3 accessible with default credentials
@@ -79,12 +85,27 @@ python3 main.py --preset critical -t 0.5 -a 1 -w 100
 python3 main.py -t 3 -a 10 -w 10
 ```
 
+### Test Custom Usernames
+```bash
+python3 main.py --preset critical --userlist custom_users.txt
+```
+
+### Test Custom Passwords
+```bash
+python3 main.py --preset critical --passlist custom_passwords.txt
+```
+
+### Test Both Custom Lists
+```bash
+python3 main.py --preset critical --userlist users.txt --passlist pass.txt
+```
+
 ## Next Steps
 
 1. **Read results**: `cat scan_vulnerable_*.txt`
 2. **Secure devices**: Change default passwords
 3. **Learn more**: Read `README.md` and `USAGE.md`
-4. **Customize**: Edit `config/` files
+4. **Customize**: Edit `config/` files or create custom credential lists
 5. **Extend**: Add your own code in `examples/`
 
 ## All Options
@@ -96,6 +117,8 @@ python3 main.py -t 3 -a 10 -w 10
 -t, --timeout         Scan timeout in seconds (default: 1)
 -a, --auth-timeout    Auth timeout in seconds (default: 3)
 -w, --workers         Number of threads (default: 20)
+--userlist            Text file with usernames (one per line)
+--passlist            Text file with passwords (one per line)
 ```
 
 ## Presets
@@ -108,12 +131,39 @@ python3 main.py -t 3 -a 10 -w 10
 | proprietary | Dahua/DVR | Find Chinese DVRs |
 | all | All configured | Complete scan |
 
+## Custom Credential Lists
+
+Create text files with your credentials:
+
+**users.txt**
+```
+admin
+root
+user
+```
+
+**passwords.txt**
+```
+admin
+12345
+password
+```
+
+Then run:
+```bash
+python3 main.py --userlist users.txt --passlist passwords.txt
+```
+
+The scanner will test all combinations (3 users × 3 passwords = 9 combinations).
+
 ## Tips
 
 - Start with `--preset critical` (fastest)
 - Use `-w 50` or more for large networks
 - Use `-t 0.5 -a 2` for slow networks
 - Results are saved automatically
+- Custom lists allow testing organization-specific credentials
+- Use `examples/users.txt` and `examples/passwords.txt` as templates
 
 ## Help
 
