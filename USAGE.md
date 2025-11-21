@@ -1,332 +1,402 @@
-# Guía de Uso Rápido - IP Scanner
+# Usage Guide - IP Scanner
 
-## Casos de Uso Comunes
+## Common Use Cases
 
-### 1. Primera Auditoría de Seguridad en Red Corporativa
+### 1. First Security Audit on Corporate Network
 
-**Escenario**: Necesitas auditar la seguridad de cámaras en una oficina.
+**Scenario**: You need to audit camera security in an office.
 
 ```bash
-# Paso 1: Escaneo rápido inicial
+# Step 1: Quick initial scan
 python3 main.py --preset critical
 
-# Paso 2: Si encuentras dispositivos, escaneo completo
+# Step 2: If you find devices, full scan
 python3 main.py
 
-# Paso 3: Documentar y reportar
-# Los resultados se guardan automáticamente en scan_vulnerable_*.txt
+# Step 3: Document and report
+# Results are automatically saved in scan_vulnerable_*.txt
 ```
 
-### 2. Auditoría Específica de RTSP
+### 2. RTSP-Specific Audit
 
-**Escenario**: Solo te interesan las cámaras con RTSP expuesto.
+**Scenario**: You're only interested in cameras with exposed RTSP.
 
 ```bash
 python3 main.py --preset rtsp -w 30
 ```
 
-### 3. Red Grande (> 1000 dispositivos)
+### 3. Large Network (> 1000 devices)
 
-**Escenario**: Escanear una red empresarial grande.
+**Scenario**: Scan a large enterprise network.
 
 ```bash
-# Usar más hilos y timeout corto
+# Use more threads and short timeout
 python3 main.py -n 10.0.0.0/22 -w 100 -t 0.5 -a 2 --preset critical
 ```
 
-### 4. Red Lenta o Inalámbrica
+### 4. Slow or Wireless Network
 
-**Escenario**: Dispositivos con respuesta lenta.
+**Scenario**: Devices with slow response.
 
 ```bash
-# Aumentar timeouts
+# Increase timeouts
 python3 main.py -t 3 -a 10 -w 10
 ```
 
-### 5. Buscar Solo Interfaces Web
+### 5. Find Only Web Interfaces
 
-**Escenario**: Identificar todas las interfaces web de cámaras.
+**Scenario**: Identify all camera web interfaces.
 
 ```bash
 python3 main.py --preset http
 ```
 
-### 6. Múltiples Redes
+### 6. Multiple Networks
 
-**Escenario**: Auditar varias subredes.
+**Scenario**: Audit multiple subnets.
 
 ```bash
-# Escanear cada red por separado
+# Scan each network separately
 python3 main.py -n 192.168.1.0/24
 python3 main.py -n 192.168.2.0/24
 python3 main.py -n 192.168.3.0/24
 ```
 
-### 7. Verificación Post-Hardening
+### 7. Post-Hardening Verification
 
-**Escenario**: Verificar que las medidas de seguridad funcionan.
-
-```bash
-# Antes de hardening - documentar
-python3 main.py > antes.txt
-
-# Después de cambiar contraseñas y cerrar puertos
-python3 main.py > despues.txt
-
-# Comparar resultados
-diff antes.txt despues.txt
-```
-
-## Interpretación de Resultados
-
-### Símbolos
-
-- 🟢 **Verde**: Dispositivo con puertos accesibles (VULNERABLE)
-- 🔵 **Azul**: Dispositivo detectado pero protegido
-
-### Información Mostrada
-
-```
-🟢 192.168.1.100    - Hikvision        - 4 puerto(s) - 3 accesible(s)
-   └─ IP             └─ Fabricante      └─ Total      └─ Vulnerables
-```
-
-### Niveles de Severidad
-
-| Puertos Accesibles | Severidad | Acción Requerida |
-|-------------------|-----------|------------------|
-| 0 | ✅ Seguro | Verificar configuración |
-| 1-2 | ⚠️ Media | Cambiar contraseñas |
-| 3+ | 🚨 Alta | Acción inmediata |
-
-## Workflow Recomendado
-
-### Auditoría de Seguridad Completa
-
-1. **Escaneo Inicial**
-   ```bash
-   python3 main.py --preset critical
-   ```
-
-2. **Análisis de Resultados**
-   - Revisar archivo `scan_vulnerable_*.txt`
-   - Identificar dispositivos críticos
-   - Priorizar por número de puertos accesibles
-
-3. **Escaneo Detallado**
-   ```bash
-   python3 main.py
-   ```
-
-4. **Verificación Manual**
-   - Usar URLs generadas para acceder a dispositivos
-   - Confirmar vulnerabilidades
-   - Documentar hallazgos
-
-5. **Remediation**
-   - Cambiar contraseñas
-   - Cerrar puertos innecesarios
-   - Actualizar firmware
-
-6. **Verificación Post-Remediation**
-   ```bash
-   python3 main.py
-   ```
-   - Confirmar que no hay dispositivos vulnerables
-
-## Tips y Trucos
-
-### Optimización de Velocidad
+**Scenario**: Verify security measures are working.
 
 ```bash
-# Máxima velocidad (red rápida, dispositivos confiables)
-python3 main.py --preset critical -w 100 -t 0.3 -a 1
+# Before hardening - document
+python3 main.py > before.txt
 
-# Balance velocidad/precisión
-python3 main.py -w 30 -t 1 -a 3
+# After changing passwords and closing ports
+python3 main.py > after.txt
 
-# Máxima precisión (puede ser lento)
-python3 main.py -w 10 -t 3 -a 10
+# Compare results
+diff before.txt after.txt
 ```
 
-### Reducir Falsos Negativos
+### 8. Custom Credential Testing
+
+**Scenario**: Test organization-specific credentials.
 
 ```bash
-# Aumentar timeouts y reducir hilos
-python3 main.py -t 2 -a 5 -w 10
+# Use custom username list
+python3 main.py --userlist company_users.txt
+
+# Use custom password list
+python3 main.py --passlist company_passwords.txt
+
+# Use both
+python3 main.py --userlist users.txt --passlist passwords.txt
 ```
 
-### Escaneo Silencioso (Menos Agresivo)
+## Result Interpretation
 
-```bash
-# Menos hilos, más timeout entre requests
-python3 main.py -w 5 -t 2
+### Symbols
+
+- `[+]` **Vulnerable**: Device with accessible ports (VULNERABLE)
+- `[-]` **Protected**: Device detected but protected
+
+### Information Displayed
+
+```
+[+] 192.168.1.100    - Hikvision        - 4 port(s) - 3 accessible
+    └─ IP            └─ Manufacturer    └─ Total     └─ Vulnerable
 ```
 
-### Buscar Fabricante Específico
+### Severity Levels
 
-```bash
-# Buscar solo Hikvision (puerto 8000)
-python3 main.py --ports 8000,554,80
+| Accessible Ports | Severity | Required Action |
+|-----------------|----------|-----------------|
+| 0 | ✅ Secure | Verify configuration |
+| 1-2 | ⚠️ Medium | Change passwords |
+| 3+ | 🚨 High | Immediate action |
 
-# Buscar solo Dahua (puerto 37777)
-python3 main.py --ports 37777,554,80
+## Understanding the Output
+
+### Real-time Output
+
+During scan:
+```
+[*] Scanning network: 192.168.1.0/24
+[*] Ports to scan: 17
+[*] Scan timeout: 1s | Auth: 3s
+[*] Threads: 20
+
+[+] 192.168.1.100    - Hikvision        - 4 port(s) - 3 accessible
+[*] Progress: 25/254 IPs scanned
 ```
 
-## Automatización
+### Final Report
 
-### Script Bash para Múltiples Redes
+After scan:
+```
+================================================================================
+  SCAN SUMMARY
+================================================================================
+Total devices found: 5
+VULNERABLE devices: 3
+PROTECTED devices: 2
+
+Distribution by manufacturer:
+  - Hikvision: 2
+  - Dahua: 1
+  - ONVIF Compatible: 2
+```
+
+### Detailed Vulnerable Device Info
+
+```
++-- 192.168.1.100 (camera-01.local)
++-- Manufacturer: Hikvision
++-- Accessible ports:
+|
+|  +-- Port 554 (RTSP)
+|  +-- Description: Standard RTSP
+|  +-- Server: RTSP Server
+|  +-- Username: admin
+|  +-- Password: 12345
+|  +-- Suggested manufacturer: Hikvision
+|  +-- URL: rtsp://admin:12345@192.168.1.100:554/Streaming/Channels/101
+|      Path: /Streaming/Channels/101
++------------------------------------------------------------------------------
+```
+
+## Custom Credential Lists
+
+### Format
+
+**users.txt** (one username per line):
+```
+admin
+root
+user
+operator
+# Comments start with #
+default
+```
+
+**passwords.txt** (one password per line):
+```
+admin
+12345
+password
+# Empty passwords supported
+123456
+company2024
+```
+
+### Usage
 
 ```bash
-#!/bin/bash
-# scan_multiple.sh
+# Test all combinations (5 users × 5 passwords = 25 combinations)
+python3 main.py --userlist users.txt --passlist passwords.txt --preset critical
+```
 
-NETWORKS=(
-    "192.168.1.0/24"
-    "192.168.2.0/24"
-    "10.0.0.0/24"
-)
+### Best Practices
 
-for net in "${NETWORKS[@]}"; do
-    echo "Escaneando $net..."
-    python3 main.py -n "$net" --preset critical
-    sleep 5
+1. **Start small**: Test with a few credentials first
+2. **Be specific**: Use organization-specific defaults
+3. **Document**: Keep track of which lists you've tested
+4. **Secure files**: Protect credential list files appropriately
+
+## Advanced Usage
+
+### Combining Options
+
+```bash
+# Fast scan of specific network with custom credentials
+python3 main.py -n 192.168.0.0/24 \
+                --preset critical \
+                -w 50 \
+                -t 0.5 \
+                -a 2 \
+                --userlist users.txt \
+                --passlist passwords.txt
+```
+
+### Targeted Port Scanning
+
+```bash
+# Only scan specific ports
+python3 main.py --ports 554,80,8000,37777
+```
+
+### Multiple Scans
+
+```bash
+# Script for multiple networks
+for net in 192.168.{1..10}.0/24; do
+  python3 main.py -n $net --preset critical
 done
 ```
 
-### Cron Job para Escaneo Periódico
+## Performance Tuning
+
+### Fast Scan (Large Networks)
 
 ```bash
-# Ejecutar cada día a las 2 AM
-0 2 * * * cd /path/to/ip_scanner && python3 main.py --preset critical > /var/log/camera_scan.log 2>&1
+python3 main.py -w 100 -t 0.3 -a 1 --preset critical
 ```
 
-### Script Python para Análisis
+**Pros**: Very fast
+**Cons**: May miss slow devices
 
-```python
-#!/usr/bin/env python3
-import glob
-import os
+### Thorough Scan (Complete Coverage)
 
-# Encontrar últimos resultados
-results = sorted(glob.glob("scan_vulnerable_*.txt"))
-if results:
-    latest = results[-1]
-    with open(latest) as f:
-        content = f.read()
-        # Contar dispositivos vulnerables
-        count = content.count("IP:")
-        print(f"Dispositivos vulnerables encontrados: {count}")
+```bash
+python3 main.py -w 10 -t 3 -a 10
 ```
+
+**Pros**: Finds all devices
+**Cons**: Very slow
+
+### Balanced Scan (Recommended)
+
+```bash
+python3 main.py -w 30 -t 1 -a 3 --preset critical
+```
+
+**Pros**: Good balance
+**Cons**: None
+
+## Output Files
+
+### Automatic Saving
+
+Results are automatically saved to:
+```
+scan_vulnerable_YYYYMMDD_HHMMSS.txt
+```
+
+### File Contents
+
+- Complete list of vulnerable devices
+- Credentials found
+- URLs ready to use
+- Manufacturer information
+
+### Using Output Files
+
+```bash
+# View results
+cat scan_vulnerable_*.txt
+
+# Extract RTSP URLs
+grep "rtsp://" scan_vulnerable_*.txt
+
+# Count vulnerable devices
+grep -c "Username:" scan_vulnerable_*.txt
+```
+
+## Security Best Practices
+
+### After Finding Vulnerabilities
+
+1. **Immediate Action**:
+   - Change all default passwords
+   - Use strong, unique passwords
+   - Document all changes
+
+2. **Network Segmentation**:
+   - Isolate cameras from main network
+   - Use VLANs for camera traffic
+   - Implement firewall rules
+
+3. **Access Control**:
+   - Disable unnecessary ports
+   - Restrict access by IP
+   - Use VPN for remote access
+
+4. **Monitoring**:
+   - Enable logging
+   - Monitor access patterns
+   - Set up alerts
+
+5. **Maintenance**:
+   - Regular firmware updates
+   - Periodic security audits
+   - Review access logs
 
 ## Troubleshooting
 
-### Problema: No encuentra dispositivos conocidos
+### No Devices Found
 
-**Solución**:
+**Possible causes**:
+- Wrong network range
+- Devices are actually secure
+- Network connectivity issues
+
+**Solutions**:
 ```bash
-# Aumentar timeout
+# Verify network
+ip addr  # Linux/macOS
+ipconfig  # Windows
+
+# Test with longer timeout
 python3 main.py -t 3 -a 10
 
-# Verificar red correcta
-ip addr  # Linux
-ipconfig # Windows
-
-# Escanear red específica
-python3 main.py -n 192.168.X.0/24
+# Test specific IP
+python3 main.py -n 192.168.1.100/32
 ```
 
-### Problema: Escaneo muy lento
+### Very Slow Scanning
 
-**Solución**:
+**Possible causes**:
+- Too many threads
+- Network congestion
+- Slow devices
+
+**Solutions**:
 ```bash
-# Reducir puertos
-python3 main.py --preset critical
+# Reduce threads
+python3 main.py -w 10
 
-# Aumentar hilos
-python3 main.py -w 50
-
-# Reducir timeout
+# Reduce timeout
 python3 main.py -t 0.5 -a 2
+
+# Use critical preset only
+python3 main.py --preset critical
 ```
 
-### Problema: Demasiados falsos positivos
+### Permission Errors
 
-**Solución**:
+**Linux/macOS**:
 ```bash
-# Aumentar timeout de autenticación
-python3 main.py -a 5
+sudo python3 main.py
 ```
 
-## Integración con Otras Herramientas
+**Windows**:
+Run terminal as Administrator
 
-### Exportar a CSV
+## FAQ
 
-```python
-# export_csv.py
-import re
-import csv
+**Q: Can I scan the Internet?**
+A: Not recommended. Designed for local/internal networks.
 
-with open('scan_vulnerable_20250115_103045.txt') as f:
-    content = f.read()
+**Q: Works on Windows/Mac/Linux?**
+A: Yes, it's cross-platform (standard Python).
 
-devices = []
-for block in content.split('IP:'):
-    if block.strip():
-        # Extraer información
-        ip = re.search(r'(\d+\.\d+\.\d+\.\d+)', block)
-        if ip:
-            devices.append({'ip': ip.group(1)})
+**Q: Requires root/admin permissions?**
+A: No for ports > 1024. Some systems may require it.
 
-with open('devices.csv', 'w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=['ip'])
-    writer.writeheader()
-    writer.writerows(devices)
-```
+**Q: Saves found passwords?**
+A: Yes, in scan_vulnerable_*.txt file (protect appropriately!).
 
-### Usar con nmap
+**Q: Affects the devices?**
+A: No, read-only. Doesn't modify configurations.
 
-```bash
-# Generar lista de IPs
-grep "IP:" scan_vulnerable_*.txt | awk '{print $2}' > targets.txt
+**Q: Detects all devices?**
+A: Detects those responding to known protocols. Some very old or exotic devices may not be detected.
 
-# Escaneo detallado con nmap
-nmap -sV -p 554,8554,80,37777 -iL targets.txt
-```
+**Q: How many credentials does it test by default?**
+A: Default list has ~50 common credentials. Custom lists can have unlimited entries.
 
-### Usar con VLC (Probar streams RTSP)
-
-```bash
-# Extraer URLs RTSP
-grep "rtsp://" scan_vulnerable_*.txt > rtsp_urls.txt
-
-# Abrir con VLC
-vlc $(head -1 rtsp_urls.txt)
-```
-
-## Preguntas Frecuentes
-
-**P: ¿Es legal usar esta herramienta?**
-R: Solo en redes donde tengas autorización expresa.
-
-**P: ¿Puedo escanear desde Internet?**
-R: No recomendado. Diseñado para redes locales/internas.
-
-**P: ¿Funciona en Windows/Mac/Linux?**
-R: Sí, es multiplataforma (Python estándar).
-
-**P: ¿Necesita permisos de root/admin?**
-R: No para puertos > 1024. Algunos sistemas pueden requerirlo.
-
-**P: ¿Guarda contraseñas encontradas?**
-R: Sí, en el archivo scan_vulnerable_*.txt (¡protegerlo adecuadamente!).
-
-**P: ¿Afecta a los dispositivos?**
-R: No, solo lectura. No modifica configuraciones.
-
-**P: ¿Detecta todos los dispositivos?**
-R: Detecta los que responden a protocolos conocidos. Algunos dispositivos muy antiguos o exóticos pueden no detectarse.
+**Q: Can I stop and resume a scan?**
+A: No, scans run to completion. Use Ctrl+C to stop.
 
 ---
 
-Para más información, consulta el README.md principal.
+For more information, see the main README.md
