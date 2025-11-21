@@ -1,393 +1,195 @@
-# Guía de Instalación - IP Scanner
+# Installation Guide - IP Scanner
 
-## Instalación Rápida
+## Quick Installation
 
 ### Linux / macOS
 
 ```bash
-# 1. Descargar o clonar el proyecto
+# 1. Download or clone the project
 cd /path/to/ip_scanner
 
-# 2. Dar permisos de ejecución
+# 2. Make executable
 chmod +x main.py
 
-# 3. Ejecutar
+# 3. Run
 python3 main.py --help
 ```
 
 ### Windows
 
 ```cmd
-# 1. Navegar al directorio
+# 1. Navigate to directory
 cd C:\path\to\ip_scanner
 
-# 2. Ejecutar
+# 2. Run
 python main.py --help
 ```
 
-## Instalación como Paquete
+## Package Installation
 
-### Instalación en modo desarrollo
+### Development Mode Installation
 
 ```bash
 cd ip_scanner
 pip install -e .
 ```
 
-Después de esto, puedes ejecutar desde cualquier lugar:
+After this, you can run from anywhere:
 ```bash
 ip-scanner --help
 ```
 
-### Instalación estándar
+### Standard Installation
 
 ```bash
 cd ip_scanner
 pip install .
 ```
 
-## Verificar Instalación
+## Verify Installation
 
 ```bash
-# Verificar Python
+# Verify Python
 python3 --version
-# Debe ser >= 3.6
+# Must be >= 3.6
 
-# Verificar módulos
+# Verify modules
 python3 -c "import socket, ipaddress, concurrent.futures; print('OK')"
 ```
 
-## Instalación en Diferentes Sistemas
+## Installation on Different Systems
 
 ### Ubuntu / Debian
 
 ```bash
-# Python ya viene instalado, verificar versión
+# Python already installed, verify version
 python3 --version
 
-# Si necesitas instalar Python 3
+# If you need to install Python 3
 sudo apt update
 sudo apt install python3 python3-pip
 
-# Clonar/descargar proyecto
+# Clone/download project
 cd ip_scanner
 
-# Ejecutar
+# Run
 python3 main.py
 ```
 
 ### CentOS / RHEL / Fedora
 
 ```bash
-# Verificar o instalar Python 3
+# Verify or install Python 3
 sudo dnf install python3
 
-# Clonar/descargar proyecto
+# Clone/download project
 cd ip_scanner
 
-# Ejecutar
+# Run
 python3 main.py
 ```
 
 ### macOS
 
 ```bash
-# Python 3 viene con macOS moderno
+# Python 3 comes with modern macOS
 python3 --version
 
-# Si no está instalado, instalar con Homebrew
+# If not installed, install with Homebrew
 brew install python3
 
-# Clonar/descargar proyecto
+# Clone/download project
 cd ip_scanner
 
-# Ejecutar
+# Run
 python3 main.py
 ```
 
-### Windows 10/11
+### Windows
 
+**Option 1: Microsoft Store**
+```
+1. Open Microsoft Store
+2. Search "Python 3"
+3. Install Python 3.x
+```
+
+**Option 2: python.org**
+```
+1. Download from https://python.org
+2. Run installer
+3. Check "Add Python to PATH"
+```
+
+Then:
 ```cmd
-# Descargar Python desde python.org
-# Durante instalación, marcar "Add Python to PATH"
-
-# Verificar
-python --version
-
-# Navegar al proyecto
-cd C:\ip_scanner
-
-# Ejecutar
-python main.py
-```
-
-## Instalación en Entorno Virtual (Recomendado)
-
-### Crear entorno virtual
-
-```bash
-# Linux / macOS
-python3 -m venv venv
-source venv/bin/activate
-
-# Windows
-python -m venv venv
-venv\Scripts\activate
-```
-
-### Instalar en entorno virtual
-
-```bash
-# Una vez activado el entorno
 cd ip_scanner
-pip install -e .
+python main.py --help
 ```
 
-### Desactivar entorno virtual
+## Docker (Optional)
 
 ```bash
-deactivate
-```
-
-## Instalación en Kali Linux
-
-```bash
-# Python ya viene instalado
-python3 --version
-
-# Clonar proyecto
-cd /opt
-sudo git clone <repo-url> ip_scanner
-cd ip_scanner
-
-# Ejecutar
-python3 main.py
-
-# Opcional: crear alias
-echo "alias ip-scan='python3 /opt/ip_scanner/main.py'" >> ~/.bashrc
-source ~/.bashrc
-
-# Ahora puedes usar
-ip-scan --help
-```
-
-## Instalación en Raspberry Pi
-
-```bash
-# Actualizar sistema
-sudo apt update
-sudo apt upgrade
-
-# Python ya viene instalado
-python3 --version
-
-# Clonar proyecto
-cd ~
-git clone <repo-url> ip_scanner
-cd ip_scanner
-
-# Ejecutar
-python3 main.py
-```
-
-## Instalación en Termux (Android)
-
-```bash
-# Instalar Python
-pkg install python
-
-# Clonar proyecto
-cd ~
-git clone <repo-url> ip_scanner
-cd ip_scanner
-
-# Ejecutar
-python main.py
-```
-
-## Instalación en Docker
-
-### Crear Dockerfile
-
-```dockerfile
-# Dockerfile
-FROM python:3.9-slim
-
-WORKDIR /app
-
-COPY ip_scanner/ /app/ip_scanner/
-COPY main.py /app/
-
-RUN chmod +x /app/main.py
-
-ENTRYPOINT ["python3", "main.py"]
-CMD ["--help"]
-```
-
-### Construir y ejecutar
-
-```bash
-# Construir imagen
+# Build image
 docker build -t ip-scanner .
 
-# Ejecutar
-docker run --rm --network host ip-scanner
-
-# Con opciones
-docker run --rm --network host ip-scanner -n 192.168.1.0/24 --preset critical
+# Run
+docker run -it --network host ip-scanner --preset critical
 ```
 
-## Solución de Problemas de Instalación
+## Troubleshooting
 
-### Error: "python3: command not found"
-
-**Linux**:
+### "python3 command not found"
 ```bash
-sudo apt install python3  # Ubuntu/Debian
-sudo dnf install python3  # Fedora/RHEL
+# Try python instead of python3
+python --version
+
+# Or install Python 3
+# Ubuntu/Debian: sudo apt install python3
+# macOS: brew install python3
 ```
 
-**macOS**:
+### Permission Errors (Linux/macOS)
 ```bash
-brew install python3
-```
-
-**Windows**: Instalar desde python.org
-
-### Error: "No module named 'ipaddress'"
-
-Este módulo es estándar desde Python 3.3. Actualizar Python:
-```bash
-python3 --version  # Debe ser >= 3.6
-```
-
-### Error: Permisos denegados
-
-**Linux/macOS**:
-```bash
-chmod +x main.py
-```
-
-O ejecutar con:
-```bash
-python3 main.py
-```
-
-### Error: "Permission denied" al escanear
-
-Algunos sistemas requieren permisos elevados:
-```bash
+# Run with sudo for privileged ports
 sudo python3 main.py
 ```
 
-### Error: Import errors
-
-Verificar que estás ejecutando desde el directorio correcto:
+### Import Errors
 ```bash
-cd ip_scanner
-python3 main.py  # NO python3 ip_scanner/main.py
+# Verify you're in the correct directory
+pwd
+ls main.py  # Should exist
+
+# Verify Python path
+python3 -c "import sys; print(sys.path)"
 ```
 
-## Actualización
+## Recommended Initial Configuration
 
-### Git
-
-```bash
-cd ip_scanner
-git pull origin main
-```
-
-### Manual
-
-1. Descargar nueva versión
-2. Reemplazar archivos
-3. Mantener archivos de configuración personalizados si los hay
-
-## Desinstalación
-
-### Si instalaste como paquete
+After installing, test with:
 
 ```bash
-pip uninstall ip_scanner
-```
-
-### Si usas directamente
-
-```bash
-rm -rf /path/to/ip_scanner
-```
-
-## Verificación Post-Instalación
-
-```bash
-# Test básico
-python3 main.py --help
-
-# Test de escaneo (red ficticia, no hará nada)
-python3 main.py -n 127.0.0.1/32 -t 0.1
-
-# Test de importación
-python3 -c "from ip_scanner.config import DEFAULT_PORTS; print(len(DEFAULT_PORTS), 'ports configured')"
-```
-
-## Performance Tips
-
-### Linux: Aumentar límite de archivos abiertos
-
-```bash
-# Temporal
-ulimit -n 65535
-
-# Permanente
-echo "* soft nofile 65535" | sudo tee -a /etc/security/limits.conf
-echo "* hard nofile 65535" | sudo tee -a /etc/security/limits.conf
-```
-
-### Todos los sistemas: Ajustar workers
-
-```bash
-# Más hilos para mejor rendimiento (si tienes buenos recursos)
-python3 main.py -w 50
-
-# Menos hilos si tienes recursos limitados
-python3 main.py -w 10
-```
-
-## Instalación para Desarrollo
-
-Si planeas modificar el código:
-
-```bash
-# Clonar proyecto
-git clone <repo-url> ip_scanner
-cd ip_scanner
-
-# Crear entorno virtual
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Instalar en modo editable
-pip install -e .
-
-# Hacer cambios...
-# Los cambios se reflejan inmediatamente sin reinstalar
-```
-
-## Configuración Inicial Recomendada
-
-Después de instalar, prueba con:
-
-```bash
-# 1. Escaneo rápido de prueba
+# 1. Quick test scan
 python3 main.py --preset critical -t 0.5 -w 10
 
-# 2. Si funciona, escaneo completo
+# 2. If it works, full scan
 python3 main.py
 
-# 3. Revisa resultados
+# 3. Check results
 ls -lh scan_*.txt
+```
+
+## Uninstallation
+
+```bash
+# If installed as package
+pip uninstall ip-scanner
+
+# If running from source, just delete the directory
+rm -rf /path/to/ip_scanner
 ```
 
 ---
 
-Para más información, consulta README.md y USAGE.md
+For more information, see README.md and USAGE.md
