@@ -1,0 +1,3 @@
+# IP Scanner - Requirements
+# No external dependencies required - uses Python standard library only
+# Requires Python 3.6+
